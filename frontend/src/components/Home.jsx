@@ -7,11 +7,64 @@ import FloatingElements from "./FloatingElements";
 import Projects from "./Projects"; // Make sure you rename your About.jsx to Projects.jsx!
 import ScrambleText from "./ScrambleText"; 
 import ResumeButton from "./ResumeButton";
+import Footer from "./Footer";
 
 // Static configs to keep the React 19 Compiler happy
 const cameraConfig = { position: [0, 0.2, 2.5], fov: 40 };
 const glConfig = { antialias: false, powerPreference: "high-performance" };
 const bgColor = ["#050505"];
+
+function HeroTime() {
+  const [timeStr, setTimeStr] = useState("");
+
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      let hours = now.getHours();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12;
+      hours = hours ? hours : 12; 
+      const minutes = now.getMinutes().toString().padStart(2, '0');
+      setTimeStr(`${hours} ${minutes} ${ampm} MUMBAI`);
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return <ScrambleText text={timeStr} scrambleOnChange={false} />;
+}
+
+const QUOTES = [
+  ["MARKETS NEVER SLEEP", "NEITHER DOES THE CODE"],
+  ["INNOVATION DISTINGUISHES", "BETWEEN LEADERS & FOLLOWERS"],
+  ["ALGORITHMS RULE", "CAPITAL FLOWS"],
+  ["BUILDING THE FUTURE", "ONE BLOCK AT A TIME"],
+  ["DATA IS THE NEW OIL", "CODE IS THE REFINERY"]
+];
+
+function HeroQuotes() {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % QUOTES.length);
+    }, 4000); // Change quote every 4 seconds
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <>
+      <div style={{ pointerEvents: "auto", display: "inline-block" }}>
+        <ScrambleText text={QUOTES[index][0]} scrambleOnChange={true} />
+      </div>
+      <br/>
+      <div style={{ pointerEvents: "auto", display: "inline-block" }}>
+        <ScrambleText text={QUOTES[index][1]} scrambleOnChange={true} />
+      </div>
+    </>
+  );
+}
 
 export default function Home() {
   const [isContactOpen, setIsContactOpen] = useState(false);
@@ -39,7 +92,7 @@ export default function Home() {
       {/* =========================================
           LAYER 1: FIXED 3D CANVAS
           ========================================= */}
-      <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100%", zIndex: 0 }}>
+      <div style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", zIndex: 0 }}>
         <Canvas 
           camera={cameraConfig} 
           gl={glConfig} 
@@ -61,16 +114,27 @@ export default function Home() {
           ========================================= */}
       <div style={{ position: "relative", zIndex: 10, pointerEvents: "none" }}>
         
-        <section style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
-          
-          <nav style={{ display: "flex", justifyContent: "space-between", padding: "2rem 4rem" }}>
+        <section style={{ position: "relative", height: "100vh", display: "flex", flexDirection: "column" }}>
+          <style>{`
+            .home-nav {
+              display: flex;
+              justify-content: space-between;
+              padding: 2rem 4rem;
+            }
+            @media (max-width: 768px) {
+              .home-nav {
+                padding: 1.5rem 1.5rem;
+              }
+            }
+          `}</style>
+          <nav className="home-nav">
             
             {/* THE BRAND NAME */}
             <div style={{ 
               color: "white", fontSize: "1.2rem", fontWeight: "bold", letterSpacing: "0.2em", mixBlendMode: "difference"
             }}>
               <a href="/" style={{ pointerEvents: "auto", cursor: "pointer", color: "white", textDecoration: "none" }}>
-                <ScrambleText text="MIRCHANDANI" />
+                <ScrambleText text="MALHAAR MIRCHANDANI" />
               </a>
             </div>
             
@@ -106,13 +170,13 @@ export default function Home() {
               }}>
                 
                 {/* LinkedIn */}
-                <a href="https://linkedin.com/in/yourprofile" target="_blank" rel="noreferrer" style={{ display: "flex", alignItems: "center", gap: "0.75rem", color: "white", textDecoration: "none", fontSize: "0.85rem", letterSpacing: "0.05em" }}>
+                <a href="https://www.linkedin.com/in/malhaar-mirchandani-a8188b287/" target="_blank" rel="noreferrer" style={{ display: "flex", alignItems: "center", gap: "0.75rem", color: "white", textDecoration: "none", fontSize: "0.85rem", letterSpacing: "0.05em" }}>
                   <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
                   LinkedIn
                 </a>
 
                 {/* Email */}
-                <a href="mailto:your.email@gmail.com" style={{ display: "flex", alignItems: "center", gap: "0.75rem", color: "white", textDecoration: "none", fontSize: "0.85rem", letterSpacing: "0.05em" }}>
+                <a href="mailto:malhaarlalitmirchandani@gmail.com" style={{ display: "flex", alignItems: "center", gap: "0.75rem", color: "white", textDecoration: "none", fontSize: "0.85rem", letterSpacing: "0.05em" }}>
                   <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
                   Gmail
                 </a>
@@ -120,23 +184,52 @@ export default function Home() {
                 {/* Phone */}
                 <a href="tel:+1234567890" style={{ display: "flex", alignItems: "center", gap: "0.75rem", color: "white", textDecoration: "none", fontSize: "0.85rem", letterSpacing: "0.05em" }}>
                   <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                  +1 (234) 567-890
+                  +91 7400212971
                 </a>
 
               </div>
             </div>
           </nav>
 
-          {/* HERO TITLE */}
-        <>
-  <style>
-    {`
-      @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,700&display=swap');
-    `}
-  </style>
+          {/* HERO OVERLAYS */}
+          <div style={{
+            position: "absolute",
+            top: "50%",
+            left: "4rem",
+            transform: "translateY(-50%)",
+            color: "rgba(255, 255, 255, 0.7)",
+            fontFamily: "monospace",
+            fontSize: "0.8rem",
+            letterSpacing: "0.1em",
+            lineHeight: "1.5",
+            pointerEvents: "none",
+            zIndex: 20
+          }}>
+            <div style={{ pointerEvents: "auto", display: "inline-block" }}>
+               <HeroTime />
+            </div>
+            <br/>
+            <div style={{ pointerEvents: "auto", display: "inline-block" }}>
+               <ScrambleText text="LIGHT RAIN, 82%" scrambleOnChange={false} />
+            </div>
+          </div>
 
-
-</>
+          <div style={{
+            position: "absolute",
+            top: "50%",
+            right: "4rem",
+            transform: "translateY(-50%)",
+            color: "rgba(255, 255, 255, 0.7)",
+            fontFamily: "monospace",
+            fontSize: "0.8rem",
+            letterSpacing: "0.1em",
+            lineHeight: "1.5",
+            textAlign: "right",
+            pointerEvents: "none",
+            zIndex: 20
+          }}>
+            <HeroQuotes />
+          </div>
 
           {/* SCROLL DOWN ARROW */}
           {showArrow && (
@@ -186,6 +279,11 @@ export default function Home() {
         {/* PROJECTS SECTION (Solid Black Curtain) */}
         <div id="projects" style={{ pointerEvents: "auto" }}>
           <Projects />
+        </div>
+
+        {/* FOOTER SECTION */}
+        <div style={{ pointerEvents: "auto" }}>
+          <Footer />
         </div>
 
       </div>

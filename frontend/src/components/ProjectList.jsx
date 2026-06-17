@@ -1,17 +1,38 @@
-import React, { useState } from "react";
-
+import React, { useState, useEffect, useRef } from "react";
+import Experience from "./Experience";
 export default function ProjectList() {
-  // Track which project is currently hovered to show the corresponding image
-  const [activeIndex, setActiveIndex] = useState(0);
+  // Start as null so NO images show by default
+  const [activeIndex, setActiveIndex] = useState(null);
+  
+  const sectionRef = useRef(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.1 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <section className="l-projects" style={{ backgroundColor: "#050505", minHeight: "100vh", position: "relative", width: "100%" }}>
+    // If the mouse leaves this entire section, reset index to null (hiding all images)
+    <section 
+      ref={sectionRef}
+      className="l-projects" 
+      onMouseLeave={() => setActiveIndex(null)}
+      style={{ backgroundColor: "#050505", minHeight: "100vh", position: "relative", width: "100%" }}
+    >
       
-      {/* Vanilla CSS scoped to this specific layout */}
       <style>{`
         .l-inner {
           max-width: 100vw;
-          margin: 0 auto;
+          margin: 0 ;
           padding: 15vh 5vw;
           position: relative;
         }
@@ -21,6 +42,11 @@ export default function ProjectList() {
           justify-content: space-between;
           align-items: center;
           position: relative;
+          
+          /* Fade Up Animation */
+          opacity: ${isVisible ? 1 : 0};
+          transform: translateY(${isVisible ? '0' : '50px'});
+          transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         /* --- THE LEFT MENU --- */
@@ -28,20 +54,54 @@ export default function ProjectList() {
           list-style: none;
           padding: 0;
           margin: 0;
-          width: 55%;
+          width: 100%; /* Use full horizontal space */
           position: relative;
           z-index: 10;
         }
 
-        .p-menu li {
-          margin-bottom: 2rem;
+        @media (max-width: 768px) {
+          .p-menu {
+            width: 100%;
+          }
+          
+          /* Decrease font size of titles on mobile */
+          .p-menu .title {
+            font-size: 3.5rem !important;
+          }
+          
+          .p-menu a {
+            padding: 1rem 1.5rem !important;
+          }
+          
+          .p-thumbnail {
+            display: none !important;
+          }
         }
 
+        .p-menu li {
+          margin-bottom: 1rem;
+        }
+
+        /* THE TEXT DIV (Updated for the Pop Effect) */
         .p-menu a {
           display: flex;
           align-items: flex-start;
           text-decoration: none;
           cursor: pointer;
+          width: 100%; /* Ensure link takes full width */
+          
+          padding: 1.5rem 2rem;
+          border-radius: 16px;
+          border: 1px solid transparent;
+          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Hover States for the overall Div */
+        .p-menu a:hover {
+          background-color: rgba(255, 255, 255, 0.03); 
+          transform: scale(1.02) translateX(10px);
+          border: 1px solid rgba(85, 170, 255, 0.1);
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
 
         /* The Numbers (01, 02, etc) */
@@ -63,23 +123,22 @@ export default function ProjectList() {
           line-height: 0.9;
           text-transform: uppercase;
           
-          /* Outline Effect */
           color: transparent;
           -webkit-text-stroke: 1px rgba(255, 255, 255, 0.3);
           transition: all 0.5s ease;
         }
 
-        /* Hover States for Menu */
+        /* Hover States for Menu Text */
         .p-menu a:hover .no {
           color: #55aaff;
         }
 
         .p-menu a:hover .title {
           -webkit-text-stroke: 0px;
-          background: linear-gradient(to right, #E95420, #772953);
+          background: linear-gradient(to right, #55aaff, #0077ff);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
-          filter: drop-shadow(0 0 20px rgba(233, 84, 32, 0.3));
+          filter: drop-shadow(0 0 20px rgba(85, 170, 255, 0.4));
         }
 
         /* --- THE RIGHT THUMBNAILS --- */
@@ -87,14 +146,14 @@ export default function ProjectList() {
           list-style: none;
           padding: 0;
           margin: 0;
-          position: fixed; /* Fixes image to the right side of screen */
+          position: fixed; 
           right: 10vw;
           top: 50%;
           transform: translateY(-50%);
           width: 25vw;
           aspect-ratio: 3/4;
-          z-index: 5;
-          pointer-events: none; /* Let mouse pass through to the canvas */
+          z-index: 20; /* Displayed above the menu (z-index 10) */
+          pointer-events: none; 
         }
 
         .p-thumbnail li {
@@ -139,6 +198,9 @@ export default function ProjectList() {
       `}</style>
 
       <div className="l-inner">
+        <div id="experience" style={{ pointerEvents: "auto" }}>
+  <Experience />
+</div>
         <div className="p-menu-wrap">
           
           {/* =========================================
@@ -146,47 +208,36 @@ export default function ProjectList() {
               ========================================= */}
           <ul className="p-menu">
             
-            {/* 01: VORTEX */}
+            {/* 01: MEDIVAC */}
             <li data-index="0">
               <a 
-                href="#vortex" 
+                href="#medivac" 
                 onMouseEnter={() => setActiveIndex(0)}
               >
                 <span className="no">01</span>
-                <div className="title">Vortex</div>
+                <div className="title">medivac</div>
               </a>
             </li>
 
-            {/* 02: LAZARUS */}
+            {/* 02: ETHENIUM */}
             <li data-index="1">
               <a 
-                href="#lazarus" 
+                href="#ethenium" 
                 onMouseEnter={() => setActiveIndex(1)}
               >
                 <span className="no">02</span>
-                <div className="title">Lazarus</div>
+                <div className="title">Ethenium</div>
               </a>
             </li>
 
-            {/* 03: AGENTIC AI */}
+            {/* 03: STATS-CRIC */}
             <li data-index="2">
               <a 
-                href="#agentic-ai" 
+                href="#stats-cric" 
                 onMouseEnter={() => setActiveIndex(2)}
               >
                 <span className="no">03</span>
-                <div className="title">Agentic AI</div>
-              </a>
-            </li>
-
-            {/* 04: OPENGL ENGINE */}
-            <li data-index="3">
-              <a 
-                href="#opengl" 
-                onMouseEnter={() => setActiveIndex(3)}
-              >
-                <span className="no">04</span>
-                <div className="title">OpenGL Engine</div>
+                <div className="title">Stats-Cric</div>
               </a>
             </li>
 
@@ -197,24 +248,19 @@ export default function ProjectList() {
               ========================================= */}
           <ul className="p-thumbnail">
             
-            {/* Image 01 */}
+            {/* Image 01: Medivac */}
             <li className={activeIndex === 0 ? "thumb-active" : "thumb-inactive"}>
-              <img src="/vortex.jpg" alt="Vortex" />
+              <img src="/medivac.jpg" alt="Medivac" />
             </li>
 
-            {/* Image 02 */}
+            {/* Image 02: Ethenium */}
             <li className={activeIndex === 1 ? "thumb-active" : "thumb-inactive"}>
-              <img src="/lazarus.jpg" alt="Lazarus" />
+              <img src="/ethenium.jpg" alt="Ethenium" />
             </li>
 
-            {/* Image 03 */}
+            {/* Image 03: Stats-Cric */}
             <li className={activeIndex === 2 ? "thumb-active" : "thumb-inactive"}>
-              <img src="/agentic-ai.jpg" alt="Agentic AI" />
-            </li>
-
-            {/* Image 04 */}
-            <li className={activeIndex === 3 ? "thumb-active" : "thumb-inactive"}>
-              <img src="/opengl.jpg" alt="OpenGL Engine" />
+              <img src="/stats-cric.jpg" alt="Stats-Cric" />
             </li>
 
           </ul>

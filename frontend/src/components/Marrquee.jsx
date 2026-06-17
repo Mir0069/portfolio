@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
 
 export default function Marquee({ 
-  email = "malhaar@mirchandani.com", 
+  email = "malhaarlalitmirchandani@gmail.com", 
   speed = "20s" 
 }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = (e) => {
-    e.preventDefault(); // Prevents the mail app from opening automatically so they can just copy it
+    e.preventDefault(); 
     navigator.clipboard.writeText(email);
     setCopied(true);
     
-    // Revert back to email after 2 seconds
     setTimeout(() => {
       setCopied(false);
     }, 2000);
@@ -23,11 +22,12 @@ export default function Marquee({
       <style>{`
         .marquee-track {
           display: flex;
+          gap: 3vw; /* Space between the repeating chunks */
           width: fit-content;
           animation: scroll ${speed} linear infinite;
         }
 
-        /* Pause the animation when the user hovers */
+        /* Halts the animation when hovered */
         .marquee-track:hover {
           animation-play-state: paused;
         }
@@ -35,6 +35,7 @@ export default function Marquee({
         .marquee-item {
           display: flex;
           align-items: center;
+          gap: 2vw;
           white-space: nowrap;
           font-size: 8vw;
           font-weight: 800; /* Extra Bold */
@@ -42,41 +43,66 @@ export default function Marquee({
           letter-spacing: 0.05em;
           cursor: pointer;
           text-decoration: none;
+          position: relative; /* For the gradient overlay */
         }
 
         .marquee-car {
-          height: 1em; /* Scales perfectly with the text size */
-          margin-right: 0.5em;
-          transition: transform 0.4s ease;
+          height: 1em; 
+          width: 1.25em; /* EXPLICIT WIDTH: prevent SVG zero-width collapse bug */
+          object-fit: contain;
+          flex-shrink: 0;
+          transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+          filter: brightness(0) invert(1);
         }
 
-        /* Make the car drive forward slightly on hover */
+        /* Smoothly drive forward and glow on hover */
         .marquee-item:hover .marquee-car {
-          transform: translateX(0.2em);
+          transform: translateX(0.3em);
+          filter: brightness(0) invert(1) drop-shadow(0 0 15px rgba(0, 242, 254, 0.8));
         }
 
-        .marquee-text {
-          /* The Base Outline Effect */
+        /* The Base Text Wrapper */
+        .marquee-text-wrapper {
+          position: relative;
+          display: inline-block;
+          flex-shrink: 0;
+        }
+
+        /* The Base Outline Text */
+        .marquee-text-base {
           color: #F5F5F5;
           -webkit-text-stroke: 2px rgba(255, 255, 255, 0.3);
-          transition: all 0.4s ease;
+          transition: opacity 0.5s ease;
         }
 
-        /* The Ubuntu Pink/Purple Gradient Glow Effect on Hover */
-        .marquee-item:hover .marquee-text {
-          background: linear-gradient(to right, #E95420, #772953);
+        /* The Gradient Overlay Text */
+        .marquee-text-gradient {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(to right, #00f2fe, #4facfe);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           -webkit-text-stroke: 0px;
-          filter: drop-shadow(0 0 20px rgba(233, 84, 32, 0.4));
+          filter: drop-shadow(0 0 20px rgba(0, 242, 254, 0.6));
+          opacity: 0;
+          transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+          pointer-events: none;
+        }
+
+        /* Smooth fade in the gradient and fade out the base */
+        .marquee-item:hover .marquee-text-gradient {
+          opacity: 1;
         }
 
         .marquee-separator {
           color: rgba(255, 255, 255, 0.2);
           -webkit-text-stroke: 0px;
-          margin: 0 3vw;
           font-size: 6vw;
           font-weight: 300;
+          flex-shrink: 0;
         }
 
         /* The mathematically perfect loop */
@@ -91,34 +117,52 @@ export default function Marquee({
         {/* --- FIRST HALF --- */}
         <a href={`mailto:${email}`} onClick={handleCopy} className="marquee-item">
           <img src="/car.svg" alt="car" className="marquee-car" />
-          <span className="marquee-text">{copied ? "COPIED TO CLIPBOARD!" : email}</span>
+          <div className="marquee-text-wrapper">
+             <span className="marquee-text-base">{copied ? "COPIED TO CLIPBOARD!" : email}</span>
+             <span className="marquee-text-gradient" aria-hidden="true">{copied ? "COPIED TO CLIPBOARD!" : email}</span>
+          </div>
           <span className="marquee-separator">//</span>
         </a>
         <a href={`mailto:${email}`} onClick={handleCopy} className="marquee-item">
           <img src="/car.svg" alt="car" className="marquee-car" />
-          <span className="marquee-text">{copied ? "COPIED TO CLIPBOARD!" : email}</span>
+          <div className="marquee-text-wrapper">
+             <span className="marquee-text-base">{copied ? "COPIED TO CLIPBOARD!" : email}</span>
+             <span className="marquee-text-gradient" aria-hidden="true">{copied ? "COPIED TO CLIPBOARD!" : email}</span>
+          </div>
           <span className="marquee-separator">//</span>
         </a>
         <a href={`mailto:${email}`} onClick={handleCopy} className="marquee-item">
           <img src="/car.svg" alt="car" className="marquee-car" />
-          <span className="marquee-text">{copied ? "COPIED TO CLIPBOARD!" : email}</span>
+          <div className="marquee-text-wrapper">
+             <span className="marquee-text-base">{copied ? "COPIED TO CLIPBOARD!" : email}</span>
+             <span className="marquee-text-gradient" aria-hidden="true">{copied ? "COPIED TO CLIPBOARD!" : email}</span>
+          </div>
           <span className="marquee-separator">//</span>
         </a>
 
         {/* --- SECOND HALF (Exact Duplicate) --- */}
         <a href={`mailto:${email}`} onClick={handleCopy} className="marquee-item">
           <img src="/car.svg" alt="car" className="marquee-car" />
-          <span className="marquee-text">{copied ? "COPIED TO CLIPBOARD!" : email}</span>
+          <div className="marquee-text-wrapper">
+             <span className="marquee-text-base">{copied ? "COPIED TO CLIPBOARD!" : email}</span>
+             <span className="marquee-text-gradient" aria-hidden="true">{copied ? "COPIED TO CLIPBOARD!" : email}</span>
+          </div>
           <span className="marquee-separator">//</span>
         </a>
         <a href={`mailto:${email}`} onClick={handleCopy} className="marquee-item">
           <img src="/car.svg" alt="car" className="marquee-car" />
-          <span className="marquee-text">{copied ? "COPIED TO CLIPBOARD!" : email}</span>
+          <div className="marquee-text-wrapper">
+             <span className="marquee-text-base">{copied ? "COPIED TO CLIPBOARD!" : email}</span>
+             <span className="marquee-text-gradient" aria-hidden="true">{copied ? "COPIED TO CLIPBOARD!" : email}</span>
+          </div>
           <span className="marquee-separator">//</span>
         </a>
         <a href={`mailto:${email}`} onClick={handleCopy} className="marquee-item">
           <img src="/car.svg" alt="car" className="marquee-car" />
-          <span className="marquee-text">{copied ? "COPIED TO CLIPBOARD!" : email}</span>
+          <div className="marquee-text-wrapper">
+             <span className="marquee-text-base">{copied ? "COPIED TO CLIPBOARD!" : email}</span>
+             <span className="marquee-text-gradient" aria-hidden="true">{copied ? "COPIED TO CLIPBOARD!" : email}</span>
+          </div>
           <span className="marquee-separator">//</span>
         </a>
 
