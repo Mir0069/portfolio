@@ -1,4 +1,13 @@
 export default function ResumeButton() {
+     const handleDownload = () => {
+  const link = document.createElement("a");
+  link.href = "/Malhaar Mirchandani.pdf"; // file inside public/
+  link.download = "Malhaar Mirchandani.pdf";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
   return (
     <>
       {/* We inject the CSS keyframes directly here so this remains a 
@@ -100,15 +109,17 @@ export default function ResumeButton() {
         `}
       </style>
 
-      <a
-        href="/resume.pdf"
-        download="Mirchandani_Resume.pdf"
-        className="liquid-btn"
-      >
+
+  <button
+    onClick={handleDownload}
+    className="liquid-btn"
+  >
+ 
+
         <span className="btn-text">RESUME</span>
         {/* Make sure dino.svg is in your public folder! */}
         <img src="/dino.svg" alt="Running Dino" className="dino" />
-      </a>
+      </button>
     </>
   );
 }
